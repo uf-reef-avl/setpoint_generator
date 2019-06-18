@@ -1,0 +1,32 @@
+# list of setpoint diactionaries
+# a setpoint dictionary consists of a setpoint position in meters and
+# a yaw angle in degrees
+waypoint_list:
+  [
+    {position: [5, -2.5, -1.0], yaw_degrees: -90},
+    {position: [-5, 2.5, -1.0], yaw_degrees: -90}
+  ]
+
+# alteratively:
+# specify a formatted CSV file
+# give a filepath relative to the home directory
+# example:
+# waypoint_list: "catkin_ws/src/qv_controller/waypoint_files/waypoint_circle_with_yaw.csv"
+
+# how close is "close enough" for the setpoint position
+# imagine a sphere around a setpoint with a radius equal to this value
+# if the origin of the vehicle's coordinate frame enters this sphere,
+# the vehicle is considered to have hit the setpoint
+# unit is meters
+setpoint_radius_tolerance: 0.4
+setpoint_z_tolerance: 0.7
+
+# fly to each setpoint in waypoint_list this many times
+# e.g. if this value is set to 2, the vehicle will fly to each setpoint in
+# waypoint_list and then do it again
+number_of_cycles: 4
+
+# if this value is true, the vehicle will fly to the first setpoint after
+# completing all of the other setpoints
+return_to_first: false
+
