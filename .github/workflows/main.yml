@@ -7,14 +7,14 @@ jobs:
     strategy:
       matrix:
         env:
-          - {ROS_DISTRO: melodic, ROS_REPO: main}
+          - {ROS_DISTRO: melodic, ROS_REPO: main, AFTER_INSTALL_TARGET_DEPENDENCIES: './pull_custom_package.sh'}
+        #global:
+         # - AFTER_INSTALL_TARGET_DEPENDENCIES='./pull_custom_package.sh'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
       - uses: 'ros-industrial/industrial_ci@master'
         env: ${{matrix.env}}
-          global:
-            - AFTER_INSTALL_TARGET_DEPENDENCIES='./pull_custom_package.sh'
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
