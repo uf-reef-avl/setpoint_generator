@@ -10,8 +10,6 @@ jobs:
           - {ROS_DISTRO: melodic, ROS_REPO: main}
         global:
           - AFTER_INSTALL_TARGET_DEPENDENCIES='./pull_custom_package.sh'
-        script:
-          - .industrial_ci/ci.sh
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
