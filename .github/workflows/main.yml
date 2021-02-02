@@ -7,10 +7,9 @@ jobs:
     strategy:
       matrix:
         env:
-          - {ROS_DISTRO: kinetic, ROS_REPO: main}
           - {ROS_DISTRO: melodic, ROS_REPO: main}
         global:
-          - BEFORE_BUILD_TARGET_WORKSPACE='./pull_custom_package.sh'
+          - AFTER_INSTALL_TARGET_DEPENDENCIES='./pull_custom_package.sh'
         script:
           - .industrial_ci/ci.sh
     runs-on: ubuntu-latest
