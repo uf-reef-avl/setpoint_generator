@@ -11,6 +11,8 @@ jobs:
           - {ROS_DISTRO: melodic, ROS_REPO: main}
         global:
           - BEFORE_BUILD_TARGET_WORKSPACE='./pull_custom_package.sh'
+        script:
+          - .industrial_ci/ci.sh
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
