@@ -9,16 +9,18 @@ from rosflight_msgs.msg import RCRaw
 from reef_msgs.msg import DesiredState
 
 
+## \class Setpoint publisher
+#
+# \brief This Ros class subscribes to a pose and load a list of waypoint at initialization. Then it will publish the first
+# waypoint in the list until the subscribed pose reaches it (depending on a tolerance radius). Then it will publish
+# the second waypoint and so one. For quad, it will publish velocity to reach the waypoint instead of the waypoint actual pose.
 class setpoint_publisher:
-    """
-    @class Setpoint publisher This Ros class subscribes to a pose and load a list of waypoint at initialization. Then it will publish the first
-    waypoint in the list until the subscribed pose reaches it (depending on a tolerance radius). Then it will publish
-    the second waypoint and so one. For quad, it will publish velocity to reach the waypoint instead of the waypoint actual pose.
-    """
+    ## \brief
+    # Constructor of the class which initialize the waypoint list, the ros publisher/subscriber and differents parameters
+    #
+    #define if the setpoint_generator is used in a simulation environement or in mocap ( it will change the pose subscriber message type)
+
     def __init__(self):
-        """ @brief Constructor of the class which initialize the waypoint list, the ros publisher/subscriber and differents parameters
-        """
-        #define if the setpoint_generator is used in a simulation environement or in mocap ( it will change the pose subscriber message type)
         is_sim = rospy.get_param("is_sim",default='false')
         use_mocap = rospy.get_param("use_mocap",default='true')
         self.mocap_sub = 0
@@ -72,11 +74,8 @@ class setpoint_publisher:
             self.mocap_sub = rospy.Subscriber("sim_mocap", Odometry, self.mocap_sim_callback)
             print("IN USE SIM")
 
-
+    ##\brief The spin loop which publish the current waypoint to reach or the real time velocity to apply to permit to the quad to reach the waypoint
     def spin(self):
-        """
-         @brief The spin loop which publish the current waypoint to reach or the real time velocity to apply to permit to the quad to reach the waypoint
-        """
         self.setpoint_msg.header.stamp = rospy.Time.now()
         self.setpoint_pub.publish(self.setpoint_msg)
 
@@ -86,12 +85,9 @@ class setpoint_publisher:
         self.quad_desired_state_msg.header.stamp = rospy.Time.now()
         self.quad_desired_state_pub.publish(self.quad_desired_state_msg)
 
-
+    ## \brief This function compute the velocity to apply for a quad to reach the current waypoint
+    # \param[in] active is a boolean who define if the setpoint publisher is ready to publish velocity or not
     def setDesiredState(self, active):
-        """
-         @brief This function compute the velocity to apply for a quad to reach the current waypoint
-         @param[in] active is a boolean who define if the setpoint publisher is ready to publish velocity or not
-        """
         if active:
             self.quad_desired_state_msg.velocity.x = self.setpoint_msg.pose.position.x - self.current_x
             if (math.fabs(self.setpoint_msg.pose.position.x - self.current_x)) > self.VMax:
@@ -126,13 +122,10 @@ class setpoint_publisher:
         #self.quad_desired_state_msg.velocity.yaw = self.setvelocity_msg.angular.z
         self.quad_desired_state_msg.pose.z = self.setpoint_msg.pose.position.z
 
-
+    ## \brief This function takes a setpoint in a dict format as entry and return it as a PoseStamped msg
+    # \param[in] setpoint_dict is a setpoint formatted as a python dict
+    # \return return a setpoint as a PoseStamped message
     def pose_msg_from_dict(self,setpoint_dict):
-        """
-         @brief This function takes a setpoint in a dict format as entry and return it as a PoseStamped msg
-         @param[in] setpoint_dict is a setpoint formatted as a python dict
-         @return return a setpoint as a PoseStamped message
-        """
         pose_msg = PoseStamped()
         euler_xyz = [0,0,np.deg2rad(setpoint_dict["yaw_degrees"])]
         q = tf.transformations.quaternion_from_euler(*euler_xyz,axes="rxyz")
@@ -148,24 +141,20 @@ class setpoint_publisher:
 
         return pose_msg
 
-
+    ## \brief This function print some information statement when the setpoint_publisher change his current setpoint
+    #
     def output_change_of_waypoint(self):
-        """
-         @brief This function print some information statement when the setpoint_publisher change his current setpoint
-        """
         info_str = "Requesting setpoint %d of %d: position (m): %s, yaw (degrees): %d." %(
             self.waypoint_index+1, len(self.waypoint_list),
             str(self.waypoint_list[self.waypoint_index]["position"]),
             self.waypoint_list[self.waypoint_index]["yaw_degrees"])
         rospy.logwarn(info_str)
 
-
+    ##  \brief This function permit to retrieve the current pose of the robot thanks to the ros_subscriber in mocap.
+    # It also update the current setpoint if the pose of the robot is located in the current setpoint radius.
+    #  \param[in] mocap_pose_msg is the ros subscribed pose of the robot
     def mocap_callback(self, mocap_pose_msg):
-        """
-         @brief This function permit to retrieve the current pose of the robot thanks to the ros_subscriber in mocap.
-         It also update the current setpoint if the pose of the robot is located in the current setpoint radius.
-         @param[in] mocap_pose_msg is the ros subscribed pose of the robot
-        """
+
         current_xy, current_z = self.dist_from_setpoint(mocap_pose_msg)
 
         if current_xy < self.setpoint_radius_tolerance and current_z < self.setpoint_z_tolerance:
@@ -176,22 +165,19 @@ class setpoint_publisher:
                 self.setpoint_msg = self.pose_msg_from_dict( self.waypoint_list[self.waypoint_index] )
 
 
+    ## \brief This function permit to retrieve the current pose of the robot thanks to the ros_subscriber in gazebo simulation.
+    # \param[in] mocap_sim_msg is the ros subscribed pose of the robot
     def mocap_sim_callback(self,mocap_sim_msg):
-        """
-         @brief This function permit to retrieve the current pose of the robot thanks to the ros_subscriber in gazebo simulation.
-         @param[in] mocap_sim_msg is the ros subscribed pose of the robot
-        """
         mocap_msg = PoseStamped()
         mocap_msg.pose = mocap_sim_msg.pose.pose
         self.mocap_callback(mocap_msg)
 
-
+    ## \brief This function compute the distance between the current position of the robot and the current setpoint in the xy plane and in z axis.
+    # \param[in] current_pose_msg is the ros subscribed pose of the robot
+    # \return a tuple composed of the the xy distance between the robot and the current waypoint and the z distance between them
     def dist_from_setpoint(self, current_pose_msg):
-        """
-         @brief This function compute the distance between the current position of the robot and the current setpoint in the xy plane and in z axis.
-         @param[in] current_pose_msg is the ros subscribed pose of the robot
-         @return a tuple composed of the the xy distance between the robot and the current waypoint and the z distance between them
-        """
+         
+
         self.current_x = current_pose_msg.pose.position.x
         self.current_y = current_pose_msg.pose.position.y
 
