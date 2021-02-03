@@ -7,7 +7,7 @@ jobs:
     strategy:
       matrix:
         env:
-          - {ROS_DISTRO: melodic, ROS_REPO: main, AFTER_INSTALL_TARGET_DEPENDENCIES: '~/target_ws/src/setpoint_generator/pull_custom_package.sh'}
+          - {ROS_DISTRO: melodic, ROS_REPO: main, AFTER_INSTALL_TARGET_DEPENDENCIES: '$TARGET_REPO_PATH"/pull_custom_package.sh"'}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
