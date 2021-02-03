@@ -7,7 +7,7 @@ jobs:
     strategy:
       matrix:
         env:
-          - {ROS_DISTRO: melodic, ROS_REPO: main, AFTER_INSTALL_TARGET_DEPENDENCIES:
+          - {ROS_DISTRO: melodic, ROS_REPO: main, BEFORE_INSTALL_TARGET_DEPENDENCIES:
           'echo "Installing reef_msgs" ;
           sudo mkdir -p ~/target_ws/src ;
           cd ~/target_ws/src ;
