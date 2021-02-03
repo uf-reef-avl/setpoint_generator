@@ -7,7 +7,10 @@ jobs:
     strategy:
       matrix:
         env:
-          - {ROS_DISTRO: melodic, ROS_REPO: main, AFTER_INSTALL_TARGET_DEPENDENCIES: '$TARGET_REPO_PATH"/pull_custom_package.sh"'}
+          - {ROS_DISTRO: melodic, ROS_REPO: main, AFTER_INSTALL_TARGET_DEPENDENCIES: 'echo "Installing reef_msgs"
+                                                                                      sudo mkdir -p ~/target_ws/src
+                                                                                      cd ~/target_ws/src
+                                                                                      git clone https://github.com/uf-reef-avl/reef_msgs'}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
