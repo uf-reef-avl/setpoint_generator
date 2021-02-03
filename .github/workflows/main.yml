@@ -11,7 +11,7 @@ jobs:
           'echo "Installing reef_msgs" ;
           sudo mkdir -p ~/target_ws/src ;
           cd ~/target_ws/src ;
-          sudo apt install git-all;
+          sudo apt -y install git;
           git clone https://github.com/uf-reef-avl/reef_msgs'}
     runs-on: ubuntu-latest
     steps:
