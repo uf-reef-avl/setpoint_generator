@@ -7,9 +7,11 @@ jobs:
     strategy:
       matrix:
         env:
-          - {ROS_DISTRO: melodic, ROS_REPO: main, AFTER_INSTALL_TARGET_DEPENDENCIES: 'echo "Installing reef_msgs" ;
+          - {ROS_DISTRO: melodic, ROS_REPO: main, AFTER_INSTALL_TARGET_DEPENDENCIES:
+          'echo "Installing reef_msgs" ;
           sudo mkdir -p ~/target_ws/src ;
           cd ~/target_ws/src ;
+          sudo apt install git-all;
           git clone https://github.com/uf-reef-avl/reef_msgs'}
     runs-on: ubuntu-latest
     steps:
