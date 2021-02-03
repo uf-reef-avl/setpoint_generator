@@ -15,11 +15,11 @@ from reef_msgs.msg import DesiredState
 # waypoint in the list until the subscribed pose reaches it (depending on a tolerance radius). Then it will publish
 # the second waypoint and so one. For quad, it will publish velocity to reach the waypoint instead of the waypoint actual pose.
 class setpoint_publisher:
+
     ## \brief
     # Constructor of the class which initialize the waypoint list, the ros publisher/subscriber and differents parameters
     #
     #define if the setpoint_generator is used in a simulation environement or in mocap ( it will change the pose subscriber message type)
-
     def __init__(self):
         is_sim = rospy.get_param("is_sim",default='false')
         use_mocap = rospy.get_param("use_mocap",default='true')
