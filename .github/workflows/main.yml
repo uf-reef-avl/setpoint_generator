@@ -12,6 +12,7 @@ jobs:
           mkdir -p ~/target_ws/src ;
           cd ~/target_ws/src ;
           sudo apt -y install git;
+          echo "git installed on the docker";
           git clone https://github.com/uf-reef-avl/reef_msgs;
           echo "Reef_msgs has been installed"'}
     runs-on: ubuntu-latest
