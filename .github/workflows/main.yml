@@ -9,10 +9,11 @@ jobs:
         env:
           - {ROS_DISTRO: melodic, ROS_REPO: main, BEFORE_INSTALL_TARGET_DEPENDENCIES:
           'echo "Installing reef_msgs" ;
-          sudo mkdir -p ~/target_ws/src ;
+          mkdir -p ~/target_ws/src ;
           cd ~/target_ws/src ;
           sudo apt -y install git;
-          git clone https://github.com/uf-reef-avl/reef_msgs'}
+          git clone https://github.com/uf-reef-avl/reef_msgs;
+          echo "Reef_msgs has been installed"'}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
