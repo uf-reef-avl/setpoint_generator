@@ -10,7 +10,6 @@ project(setpoint_generator)
 find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   nav_msgs
-  reef_msgs
   roscpp
   rospy
 )
