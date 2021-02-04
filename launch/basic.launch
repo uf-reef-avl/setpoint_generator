@@ -1,0 +1,10 @@
+    
+<launch>
+    <arg name="waypoints_file" default="$(find setpoint_generator)/waypoint_files/figure_8.yaml" />
+    <node name="setpoint_publisher" pkg="setpoint_generator" type="get_setpoint_node.py" clear_params="true" output="screen">
+      <remap from="sim_mocap" to="odom"/>
+      <rosparam file="$(arg waypoints_file)"/>
+      <rosparam command="load" file="$(find setpoint_generator)/params/basic_param.yaml"/>
+    </node>
+
+</launch>
