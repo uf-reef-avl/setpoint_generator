@@ -87,7 +87,8 @@ git clone https://github.com/uf-reef-avl/reef_msgs
 cd ..
 catkin_make
 </pre><p> As this pack can be used either on quad or on turtlebot by remapping the topics, the user can also install the <a href="http://wiki.ros.org/kobuki/Tutorials/Installation">kobuki packages</a> if he wants to use it directly on turtlebot.</p>
-<p><a class="anchor" id="ROS_Topics_and_Messages"></a> </p><h1>** ROS Topics and Messages ** </h1>
+<p><a class="anchor" id="ROS_Topics_and_Messages"></a></p>
+<h1>** ROS Topics and Messages ** </h1>
 <h2>Subscribed Topics</h2>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -106,7 +107,8 @@ catkin_make
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">desired_state   </td><td class="markdownTableBodyNone">reef_msgs_msgs::DesiredState   </td><td class="markdownTableBodyNone">Quad velocity to reach the current waypoint   </td></tr>
 </table>
-<p><a class="anchor" id="Usage"></a> </p><h1><b>Usage</b> </h1>
+<p><a class="anchor" id="Usage"></a></p>
+<h1><b>Usage</b> </h1>
 <p>First of all the topics that are described above have to be remapped in the launch file. One launch file can look like this:</p>
 <div class="fragment"><div class="line">&lt;<span class="keywordtype">launch</span>&gt;</div>
 <div class="line">    &lt;<span class="keywordtype">arg</span> <span class="keyword">name</span>=<span class="stringliteral">&quot;waypoints_file&quot;</span> <span class="keyword">default</span>=<span class="stringliteral">&quot;$(find setpoint_generator)/waypoint_files/figure_8.yaml&quot;</span> /&gt; </div>
