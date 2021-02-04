@@ -86,12 +86,12 @@ First of all the topics that are described above have to be remapped in the laun
 	</node>
 </launch>
 ```
-In this launch file, the **waypoint file** and the **param_file** are loaded into the node in order to setup the configuration of the setpoint generator. Moreover, the **sim_mocap** topic is remapped to the **odom** topic. Then the setpoint generator will update the current waypoint published on **/setpoin** if the position published on **odom** topic match the current waypoint position. This launch file could be a gazebo scenario.
+In this launch file, the **waypoint file** and the **param_file** are loaded into the node in order to setup the configuration of the setpoint generator. Moreover, the **sim_mocap** topic is remapped to the **odom** topic. Then the setpoint generator will update the current waypoint published on the topic **setpoint** if the position published on **odom** topic match the current waypoint position. This launch file could be a typical gazebo scenario.
 
 Let's take a look to an example of a waypoint file which permit to define the list of waypoints:
 
 ```xml
-# list of setpoint diactionaries
+# list of setpoint dictionnary
 # a setpoint dictionary consists of a setpoint position in meters and
 # a yaw angle in degrees
 waypoint_list:
