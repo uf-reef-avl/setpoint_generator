@@ -52,7 +52,7 @@ if he wants to use it directly on turtlebot.
 
 <a name="ROS_Topics_and_Messages"/>
 
-** ROS Topics and Messages **
+**ROS Topics and Messages**
 -------------------------
 
 ### Subscribed Topics
