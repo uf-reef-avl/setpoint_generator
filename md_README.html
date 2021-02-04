@@ -65,15 +65,118 @@ $(function() {
 <div class="title"><a class="el" href="classSetpoint.html" title="This Ros class subscribes to a pose and load a list of waypoint at initialization.">Setpoint</a> generator </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>This package is used to apply a list of waypoint to a robot. It takes as argument the different waypoints of the trajectory and publish each of them depending on the robot position as PoseStamped msg. Everytime the robot reaches the current waypoint, the setpoint generator will change it to the next one in the list. This package can also publish the velocities to get to the waypoints for the reef quad rotor.</p>
-<p><a href="https://github.com/uf-reef-avl/setpoint_generator/actions"><img src="https://github.com/uf-reef-avl/setpoint_generator/workflows/master/badge.svg" alt="master Actions Status" style="pointer-events: none;" class="inline"/></a></p>
+<div class="textblock"><p><a href="https://github.com/uf-reef-avl/setpoint_generator/actions"><img src="https://github.com/uf-reef-avl/setpoint_generator/workflows/master/badge.svg" alt="master Actions Status" style="pointer-events: none;" class="inline"/></a></p>
+<p>This package is used to apply a list of waypoint to a robot. It takes as argument the different waypoints of the trajectory and publish each of them depending on the robot position as PoseStamped msg. Everytime the robot reaches the current waypoint, the setpoint generator will change it to the next one in the list. This package can also publish the velocities to get to the waypoints for the reef quad rotor.</p>
 <h1><b>Table of Contents</b> </h1>
 <ol type="1">
 <li><a href="#Installation">Installation</a></li>
 <li><a href="#Dependencies">Dependencies</a></li>
-<li><a href="#Usage">Usage</a> </li>
+<li><a href="#ROS_Topics_and_Messages">ROS Topics and Messages</a></li>
+<li><a href="#Usage">Usage</a></li>
 </ol>
-</div></div><!-- contents -->
+<p><a class="anchor" id="Installation"></a></p>
+<h1><b>Installation</b> </h1>
+<p>To install it, clone the setpoint_generator remote repository into your catkin workspace.</p>
+<p>For example: </p><pre class="fragment">mkdir -p ~/catkin_ws/src
+cd ~/catkin_ws/src
+git clone https://github.com/uf-reef-avl/setpoint_generator
+</pre><p><a class="anchor" id="Dependencies"></a></p>
+<h1><b>Dependencies</b> </h1>
+<p>This package depends mainly upon reef_msgs to retrieve the mocap position data from the robot. To install it and build the two packages, you can use: </p><pre class="fragment">cd ~/catkin_ws/src
+git clone https://github.com/uf-reef-avl/reef_msgs
+cd ..
+catkin_make
+</pre><p> As this pack can be used either on quad or on turtlebot by remapping the topics, the user can also install the <a href="http://wiki.ros.org/kobuki/Tutorials/Installation">kobuki packages</a> if he wants to use it directly on turtlebot.</p>
+<p><a class="anchor" id="ROS_Topics_and_Messages"></a> </p><h1>ROS Topics and Messages</h1>
+<h2>Subscribed Topics</h2>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Topic Name   </th><th class="markdownTableHeadNone">Message Type   </th><th class="markdownTableHeadNone">Description    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">sim_mocap   </td><td class="markdownTableBodyNone">nav_msgs::Odometry   </td><td class="markdownTableBodyNone">Position of the robot    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">pose_stamped   </td><td class="markdownTableBodyNone">geometry_msgs::PoseStamped   </td><td class="markdownTableBodyNone">Position of the robot   </td></tr>
+</table>
+<h2>Published Topics</h2>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Topic Name   </th><th class="markdownTableHeadNone">Message Type   </th><th class="markdownTableHeadNone">Description    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">setpoint   </td><td class="markdownTableBodyNone">geometry_msgs::PoseStamped   </td><td class="markdownTableBodyNone">Current waypoint published    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">desired_state   </td><td class="markdownTableBodyNone">reef_msgs_msgs::DesiredState   </td><td class="markdownTableBodyNone">Quad velocity to reach the current waypoint   </td></tr>
+</table>
+<p><a class="anchor" id="Usage"></a> </p><h1>Usage</h1>
+<p>First of all the topics that are described above have to be remapped in the launch file. One launch file can look like this:</p>
+<div class="fragment"><div class="line">&lt;<span class="keywordtype">launch</span>&gt;</div>
+<div class="line">    &lt;<span class="keywordtype">arg</span> <span class="keyword">name</span>=<span class="stringliteral">&quot;waypoints_file&quot;</span> <span class="keyword">default</span>=<span class="stringliteral">&quot;$(find setpoint_generator)/waypoint_files/figure_8.yaml&quot;</span> /&gt; </div>
+<div class="line">    &lt;<span class="keywordtype">arg</span> <span class="keyword">name</span>=<span class="stringliteral">&quot;param_file&quot;</span> <span class="keyword">default</span>=<span class="stringliteral">&quot;$(find setpoint_generator)/params/basic_param.yaml&quot;</span> /&gt; </div>
+<div class="line">    &lt;<span class="keywordtype">node</span> <span class="keyword">name</span>=<span class="stringliteral">&quot;setpoint_publisher&quot;</span> <span class="keyword">pkg</span>=<span class="stringliteral">&quot;setpoint_generator&quot;</span> <span class="keyword">type</span>=<span class="stringliteral">&quot;get_setpoint_node.py&quot;</span> <span class="keyword">clear_params</span>=<span class="stringliteral">&quot;true&quot;</span> <span class="keyword">output</span>=<span class="stringliteral">&quot;screen&quot;</span>&gt;</div>
+<div class="line">    &lt;<span class="keywordtype">remap</span> <span class="keyword">from</span>=<span class="stringliteral">&quot;sim_mocap&quot;</span> <span class="keyword">to</span>=<span class="stringliteral">&quot;odom&quot;</span>/&gt;</div>
+<div class="line">    &lt;<span class="keywordtype">rosparam</span> <span class="keyword">command</span>=<span class="stringliteral">&quot;load&quot;</span> <span class="keyword">file</span>=<span class="stringliteral">&quot;$(arg waypoints_file)&quot;</span>/&gt;</div>
+<div class="line">    &lt;<span class="keywordtype">rosparam</span> <span class="keyword">command</span>=<span class="stringliteral">&quot;load&quot;</span> <span class="keyword">file</span>=<span class="stringliteral">&quot;$(arg param_file&quot;</span>/&gt;</div>
+<div class="line">    &lt;/<span class="keywordtype">node</span>&gt;</div>
+<div class="line">&lt;/<span class="keywordtype">launch</span>&gt;</div>
+</div><!-- fragment --><p> In this launch file, the <b>waypoint file</b> and the <b>param_file</b> are loaded into the node in order to setup the configuration of the setpoint generator. Moreover, the <b>sim_mocap</b> topic is remapped to the <b>odom</b> topic. Then the setpoint generator will update the current waypoint published on **/setpoin** if the position published on <b>odom</b> topic match the current waypoint position. This launch file could be a gazebo scenario.</p>
+<p>Let's take a look to an example of a waypoint file which permit to define the list of waypoints:</p>
+<div class="fragment"><div class="line"># <span class="keyword">list</span> <span class="keyword">of</span> <span class="keyword">setpoint</span> <span class="keyword">diactionaries</span></div>
+<div class="line"># <span class="keyword">a</span> <span class="keyword">setpoint</span> <span class="keyword">dictionary</span> <span class="keyword">consists</span> <span class="keyword">of</span> <span class="keyword">a</span> <span class="keyword">setpoint</span> <span class="keyword">position</span> <span class="keyword">in</span> <span class="keyword">meters</span> <span class="keyword">and</span></div>
+<div class="line"># <span class="keyword">a</span> <span class="keyword">yaw</span> <span class="keyword">angle</span> <span class="keyword">in</span> <span class="keyword">degrees</span></div>
+<div class="line"><span class="keyword">waypoint_list:</span></div>
+<div class="line">  [</div>
+<div class="line">    {<span class="keyword">position:</span> [5, -2.5, -1.0], <span class="keyword">yaw_degrees:</span> -90},</div>
+<div class="line">    {<span class="keyword">position:</span> [-5, 2.5, -1.0], <span class="keyword">yaw_degrees:</span> -90}</div>
+<div class="line">  ]</div>
+<div class="line"> </div>
+<div class="line"># <span class="keyword">alteratively:</span></div>
+<div class="line"># <span class="keyword">specify</span> <span class="keyword">a</span> <span class="keyword">formatted</span> <span class="keyword">CSV</span> <span class="keyword">file</span></div>
+<div class="line"># <span class="keyword">give</span> <span class="keyword">a</span> <span class="keyword">filepath</span> <span class="keyword">relative</span> <span class="keyword">to</span> <span class="keyword">the</span> <span class="keyword">home</span> <span class="keyword">directory</span></div>
+<div class="line"># <span class="keyword">example:</span></div>
+<div class="line"># <span class="keyword">waypoint_list:</span> <span class="stringliteral">&quot;catkin_ws/src/qv_controller/waypoint_files/waypoint_circle_with_yaw.csv&quot;</span></div>
+<div class="line"> </div>
+<div class="line"># <span class="keyword">how</span> <span class="keyword">close</span> <span class="keyword">is</span> <span class="stringliteral">&quot;close enough&quot;</span> <span class="keyword">for</span> <span class="keyword">the</span> <span class="keyword">setpoint</span> <span class="keyword">position</span></div>
+<div class="line"># <span class="keyword">imagine</span> <span class="keyword">a</span> <span class="keyword">sphere</span> <span class="keyword">around</span> <span class="keyword">a</span> <span class="keyword">setpoint</span> <span class="keyword">with</span> <span class="keyword">a</span> <span class="keyword">radius</span> <span class="keyword">equal</span> <span class="keyword">to</span> <span class="keyword">this</span> <span class="keyword">value</span></div>
+<div class="line"># <span class="keyword">if</span> <span class="keyword">the</span> <span class="keyword">origin</span> <span class="keyword">of</span> <span class="keyword">the</span> <span class="keyword">vehicle</span>&#39;<span class="keyword">s</span> <span class="keyword">coordinate</span> <span class="keyword">frame</span> <span class="keyword">enters</span> <span class="keyword">this</span> <span class="keyword">sphere</span>,</div>
+<div class="line"># <span class="keyword">the</span> <span class="keyword">vehicle</span> <span class="keyword">is</span> <span class="keyword">considered</span> <span class="keyword">to</span> <span class="keyword">have</span> <span class="keyword">hit</span> <span class="keyword">the</span> <span class="keyword">setpoint</span></div>
+<div class="line"># <span class="keyword">unit</span> <span class="keyword">is</span> <span class="keyword">meters</span></div>
+<div class="line"><span class="keyword">setpoint_radius_tolerance:</span> 0.4</div>
+<div class="line"><span class="keyword">setpoint_z_tolerance:</span> 0.7</div>
+<div class="line"> </div>
+<div class="line"># <span class="keyword">fly</span> <span class="keyword">to</span> <span class="keyword">each</span> <span class="keyword">setpoint</span> <span class="keyword">in</span> <span class="keyword">waypoint_list</span> <span class="keyword">this</span> <span class="keyword">many</span> <span class="keyword">times</span></div>
+<div class="line"># <span class="keyword">e.g.</span> <span class="keyword">if</span> <span class="keyword">this</span> <span class="keyword">value</span> <span class="keyword">is</span> <span class="keyword">set</span> <span class="keyword">to</span> 2, <span class="keyword">the</span> <span class="keyword">vehicle</span> <span class="keyword">will</span> <span class="keyword">fly</span> <span class="keyword">to</span> <span class="keyword">each</span> <span class="keyword">setpoint</span> <span class="keyword">in</span></div>
+<div class="line"># <span class="keyword">waypoint_list</span> <span class="keyword">and</span> <span class="keyword">then</span> <span class="keyword">do</span> <span class="keyword">it</span> <span class="keyword">again</span></div>
+<div class="line"><span class="keyword">number_of_cycles:</span> 4</div>
+<div class="line"> </div>
+<div class="line"># <span class="keyword">if</span> <span class="keyword">this</span> <span class="keyword">value</span> <span class="keyword">is</span> <span class="keyword">true</span>, <span class="keyword">the</span> <span class="keyword">vehicle</span> <span class="keyword">will</span> <span class="keyword">fly</span> <span class="keyword">to</span> <span class="keyword">the</span> <span class="keyword">first</span> <span class="keyword">setpoint</span> <span class="keyword">after</span></div>
+<div class="line"># <span class="keyword">completing</span> <span class="keyword">all</span> <span class="keyword">of</span> <span class="keyword">the</span> <span class="keyword">other</span> <span class="keyword">setpoints</span></div>
+<div class="line"><span class="keyword">return_to_first:</span> <span class="keyword">false</span></div>
+</div><!-- fragment --><p>Here is an example of a param file which is mostly used to defined some parameters to compute the velocity for a quad : </p><div class="fragment"><div class="line">#<span class="keyword">if</span> <span class="keyword">we</span> <span class="keyword">are</span> <span class="keyword">using</span> <span class="keyword">mocap</span> <span class="keyword">right</span> <span class="keyword">now</span></div>
+<div class="line"><span class="keyword">use_mocap:</span> <span class="keyword">true</span></div>
+<div class="line"><span class="keyword">initial_yaw:</span> 0.0</div>
+<div class="line">#<span class="keyword">Depending</span> <span class="keyword">on</span> <span class="keyword">the</span> <span class="keyword">type</span> <span class="keyword">of</span> <span class="keyword">robot</span>, <span class="keyword">the</span> <span class="keyword">command</span> <span class="keyword">can</span> <span class="keyword">be</span> <span class="keyword">sent</span> <span class="keyword">in</span> <span class="keyword">the</span> <span class="keyword">NED</span> (<span class="keyword">quad</span>) <span class="keyword">or</span> <span class="keyword">NWU</span> (<span class="keyword">turtlebot</span>) <span class="keyword">frame</span></div>
+<div class="line">#<span class="keyword">set</span> <span class="keyword">this</span> <span class="keyword">value</span> <span class="keyword">to</span> <span class="keyword">NED</span> <span class="keyword">or</span> <span class="keyword">NWU</span> <span class="keyword">and</span> <span class="keyword">make</span> <span class="keyword">sure</span> <span class="keyword">that</span> <span class="keyword">the</span> <span class="keyword">mocap</span> <span class="keyword">PoseStamped</span> <span class="keyword">message</span> <span class="keyword">are</span> <span class="keyword">set</span> <span class="keyword">to</span> <span class="keyword">NED</span></div>
+<div class="line"><span class="keyword">robot_command_orientation:</span> <span class="keyword">NED</span></div>
+<div class="line"> </div>
+<div class="line">#<span class="keyword">if</span> <span class="keyword">the</span> <span class="keyword">frame</span> <span class="keyword">is</span> <span class="keyword">in</span> <span class="keyword">NED</span>, <span class="keyword">write</span> <span class="keyword">a</span> <span class="keyword">negative</span> <span class="keyword">altitude</span></div>
+<div class="line"><span class="keyword">altitude:</span> -1.0</div>
+<div class="line"> </div>
+<div class="line">#<span class="keyword">Maximum</span> <span class="keyword">linear</span> <span class="keyword">velocity</span> <span class="keyword">possibly</span> <span class="keyword">applied</span> <span class="keyword">to</span> <span class="keyword">the</span> <span class="keyword">robot</span></div>
+<div class="line"><span class="keyword">VMax:</span> 1.</div>
+<div class="line">#<span class="keyword">Minimum</span> <span class="keyword">linear</span> <span class="keyword">velocity</span> <span class="keyword">applied</span> <span class="keyword">to</span> <span class="keyword">the</span> <span class="keyword">robot</span></div>
+<div class="line"><span class="keyword">VMin:</span> 0.1</div>
+<div class="line">#<span class="keyword">Maximum</span> <span class="keyword">angular</span> <span class="keyword">velocity</span> <span class="keyword">possibly</span> <span class="keyword">applied</span></div>
+<div class="line"><span class="keyword">PhiMax:</span> 0.8</div>
+<div class="line"> </div>
+<div class="line">#<span class="keyword">Gains</span> <span class="keyword">of</span> <span class="keyword">the</span> <span class="keyword">controller</span> <span class="keyword">on</span> <span class="keyword">x</span></div>
+<div class="line"><span class="keyword">Kx:</span> 1.</div>
+<div class="line">#<span class="keyword">Gains</span> <span class="keyword">of</span> <span class="keyword">the</span> <span class="keyword">controlller</span> <span class="keyword">on</span> <span class="keyword">y</span></div>
+<div class="line"><span class="keyword">Ky:</span> 1.</div>
+<div class="line">#<span class="keyword">Gains</span> <span class="keyword">of</span> <span class="keyword">the</span> <span class="keyword">controller</span> <span class="keyword">on</span>  <span class="keyword">theta</span></div>
+<div class="line"><span class="keyword">Ktheta:</span> 1.</div>
+<div class="line"> </div>
+<div class="line">#<span class="keyword">Flag</span> <span class="keyword">for</span> <span class="keyword">begining</span> <span class="keyword">a</span> <span class="keyword">run</span></div>
+<div class="line"><span class="keyword">active:</span> <span class="keyword">false</span></div>
+</div><!-- fragment --> </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
