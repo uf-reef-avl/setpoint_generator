@@ -51,7 +51,8 @@ if he wants to use it directly on turtlebot.
 
 
 <a name="ROS_Topics_and_Messages"/>
-## ROS Topics and Messages
+** ROS Topics and Messages **
+-------------------------
 
 ### Subscribed Topics
 |Topic Name|Message Type|Description|
@@ -67,7 +68,8 @@ if he wants to use it directly on turtlebot.
 |desired_state|reef_msgs_msgs::DesiredState|Quad velocity to reach the current waypoint|
 
 <a name="Usage"/>
-## Usage
+**Usage**
+---------
 
 First of all the topics that are described above have to be remapped in the launch file. One launch file can look like this:
 
