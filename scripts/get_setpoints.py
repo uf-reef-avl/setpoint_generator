@@ -29,9 +29,9 @@ class setpoint_publisher:
         self.VMax = rospy.get_param("~VMax")
         self.VMin = rospy.get_param("~VMin")
         self.PhiMax = rospy.get_param("~PhiMax")
-
-        #initialize the yaw of the quad
-        self.initial_yaw = 0
+        self.initial_yaw = rospy.get_param("~initial_yaw")
+        self.initial_z = rospy.get_param("~initial_z")
+        self.active = False
         #initialize the list index
         self.waypoint_index = 0
         self.waypoint_list = rospy.get_param("~waypoint_list")
@@ -51,19 +51,20 @@ class setpoint_publisher:
         self.setpoint_z_tolerance = rospy.get_param("~setpoint_z_tolerance")
 
         # initialize first desired state message using first waypoint
-        self.current_x = 0
-        self.current_y = 0
         self.quad_desired_state_msg = DesiredState()
         self.quad_desired_state_msg.pose.x = 0
         self.quad_desired_state_msg.pose.y = 0
-        self.quad_desired_state_msg.pose.yaw = 0
-        self.quad_desired_state_msg.velocity_valid = True
+        self.quad_desired_state_msg.pose.z = self.initial_z
+        self.quad_desired_state_msg.pose.yaw = self.initial_yaw
+        self.quad_desired_state_msg.position_valid = True
+        self.quad_desired_state_msg.velocity_valid = False
 
         # initialize waypoint publisher
         self.setpoint_pub = rospy.Publisher("setpoint", PoseStamped, queue_size=10)
 
         #the publisher below are used to send commands to the quad
         self.quad_desired_state_pub = rospy.Publisher("desired_state", DesiredState, queue_size=10)
+        rospy.Subscriber("rc_raw", RCRaw, self.rc_raw_callback)
 
         # initialize pose subscriber
         if use_mocap:
@@ -85,42 +86,24 @@ class setpoint_publisher:
         self.quad_desired_state_msg.header.stamp = rospy.Time.now()
         self.quad_desired_state_pub.publish(self.quad_desired_state_msg)
 
+    def rc_raw_callback(self, rc_msg):
+        if rc_msg.values[5] > 500:
+            self.active = True
+        else:
+            self.active = False
+
     ## \brief This function compute the velocity to apply for a quad to reach the current waypoint
     # \param[in] active is a boolean who define if the setpoint publisher is ready to publish velocity or not
     def setDesiredState(self, active):
-        if active:
-            self.quad_desired_state_msg.velocity.x = self.setpoint_msg.pose.position.x - self.current_x
-            if (math.fabs(self.setpoint_msg.pose.position.x - self.current_x)) > self.VMax:
-                if (self.setpoint_msg.pose.position.x - self.current_x) > 0:
-                    self.quad_desired_state_msg.velocity.x = self.VMax
-                else:
-                    self.quad_desired_state_msg.velocity.x = -self.VMax
-
-
-            self.quad_desired_state_msg.velocity.y = self.setpoint_msg.pose.position.y - self.current_y
-            if (math.fabs(self.setpoint_msg.pose.position.y - self.current_y)) > self.VMax:
-                if (self.setpoint_msg.pose.position.y - self.current_y) > 0:
-                    self.quad_desired_state_msg.velocity.y = self.VMax
-                else:
-                    self.quad_desired_state_msg.velocity.y = -self.VMax
-
+        if self.active == True:
+            self.quad_desired_state_msg.pose.x = self.setpoint_msg.pose.position.x
+            self.quad_desired_state_msg.pose.y = self.setpoint_msg.pose.position.y
+            self.quad_desired_state_msg.pose.z = self.setpoint_msg.pose.position.z
         else:
-            self.quad_desired_state_msg.velocity.x = 0 - self.current_x
-            if (math.fabs(0 - self.current_x)) > self.VMax:
-                if (0 - self.current_x) > 0:
-                    self.quad_desired_state_msg.velocity.x = self.VMax
-                else:
-                    self.quad_desired_state_msg.velocity.x = -self.VMax
-
-            self.quad_desired_state_msg.velocity.y = 0 - self.current_y
-            if (math.fabs(0 - self.current_y)) > self.VMax:
-                if (0 - self.current_y) > 0:
-                    self.quad_desired_state_msg.velocity.y = self.VMax
-                else:
-                    self.quad_desired_state_msg.velocity.y = -self.VMax
-
-        #self.quad_desired_state_msg.velocity.yaw = self.setvelocity_msg.angular.z
-        self.quad_desired_state_msg.pose.z = self.setpoint_msg.pose.position.z
+            self.quad_desired_state_msg.pose.x = 0
+            self.quad_desired_state_msg.pose.y = 0
+            self.quad_desired_state_msg.pose.z = rospy.get_param("~initial_z")
+            self.quad_desired_state_msg.pose.yaw = self.initial_yaw
 
     ## \brief This function takes a setpoint in a dict format as entry and return it as a PoseStamped msg
     # \param[in] setpoint_dict is a setpoint formatted as a python dict

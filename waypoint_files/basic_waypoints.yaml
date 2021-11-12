@@ -3,8 +3,7 @@
 # a yaw angle in degrees
 waypoint_list:
   [
-    {position: [5, -2.5, -1.0], yaw_degrees: -90},
-    {position: [-5, 2.5, -1.0], yaw_degrees: -90}
+    {position: [-2.5, 0., -1.2], yaw_degrees: -90}
   ]
 
 # alteratively:
@@ -20,7 +19,8 @@ waypoint_list:
 # unit is meters
 setpoint_radius_tolerance: 0.4
 setpoint_z_tolerance: 0.7
-
+initial_z: -1.2
+initial_yaw: -1.57
 # fly to each setpoint in waypoint_list this many times
 # e.g. if this value is set to 2, the vehicle will fly to each setpoint in
 # waypoint_list and then do it again
