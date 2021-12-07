@@ -1,5 +1,4 @@
 use_mocap: true
-initial_yaw: 0.0
 #Depending on the type of robot, the command can be sent in the NED (quad) or NWU (turtlebot) frame
 #set this value to NED or NWU and make sure that the mocap PoseStamped message are set to NED
 robot_command_orientation: NED

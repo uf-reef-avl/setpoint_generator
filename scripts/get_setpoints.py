@@ -87,7 +87,7 @@ class setpoint_publisher:
         self.quad_desired_state_pub.publish(self.quad_desired_state_msg)
 
     def rc_raw_callback(self, rc_msg):
-        if rc_msg.values[5] > 500:
+        if rc_msg.values[6] > 500:
             self.active = True
         else:
             self.active = False

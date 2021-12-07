@@ -3,7 +3,10 @@
 # a yaw angle in degrees
 waypoint_list:
   [
-    {position: [-2.5, 0., -1.2], yaw_degrees: -90}
+    {position: [1.3, -3.5, -1.5], yaw_degrees: -90},
+    {position: [-1.3, -3.5, -1.5], yaw_degrees: -90},
+    {position: [-1.3, 2.5, -1.5], yaw_degrees: -90},
+    {position: [1.3, 2.5, -1.5], yaw_degrees: -90}          
   ]
 
 # alteratively:
